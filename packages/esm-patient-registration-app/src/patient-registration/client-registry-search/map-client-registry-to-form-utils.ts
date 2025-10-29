@@ -122,6 +122,30 @@ function mapRelationships(patient: PatientData, setFieldValue: (field: string, v
   setFieldValue('relationships', relationships);
 }
 
+function mapAddresses(patient: PatientData, setFieldValue: (field: string, value: any) => void) {
+  // county
+  if (patient['county']) {
+    setFieldValue('address.countyDistrict', patient['county']);
+  }
+  //subcounty
+  if (patient['sub_county']) {
+    setFieldValue('address.stateProvince', patient['sub_county']);
+  }
+  if (patient['ward']) {
+    //ward
+    setFieldValue('address.address4', patient['ward']);
+  }
+}
+
+function mapContactDetails(patient: PatientData, setFieldValue: (field: string, value: any) => void) {
+  if (patient['email']) {
+    setFieldValue('attributes.2f65dbcb-3e58-45a3-8be7-fd1dc9aa0faa', patient['email']);
+  }
+  if (patient['phone']) {
+    setFieldValue('attributes.72a759a8-1359-11df-a1f1-0026b9348838', patient['phone']);
+  }
+}
+
 export function applyClientRegistryMapping(patient: PatientData, setFieldValue: (field: string, value: any) => void) {
   Object.entries(fieldMapping).forEach(([formField, mapping]) => {
     let crField: string;
@@ -142,4 +166,6 @@ export function applyClientRegistryMapping(patient: PatientData, setFieldValue: 
 
   mapNextOfKin(patient, setFieldValue);
   mapRelationships(patient, setFieldValue);
+  mapAddresses(patient, setFieldValue);
+  mapContactDetails(patient, setFieldValue);
 }
