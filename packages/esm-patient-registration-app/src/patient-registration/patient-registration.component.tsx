@@ -40,7 +40,6 @@ export const PatientRegistration: React.FC<PatientRegistrationProps> = ({ savePa
   const { search } = useLocation();
   const { isLoading: isLoadingPatientToEdit, patient: patientToEdit } = usePatient(uuidOfPatientToEdit);
   const config = useConfig<RegistrationConfig>();
-
   const [initialFormValues, setInitialFormValues] = useInitialFormValues(
     isLoadingPatientToEdit,
     patientToEdit,
