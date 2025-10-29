@@ -10,6 +10,7 @@ import { GenderField } from './gender/gender-field.component';
 import { Identifiers } from './id/id-field.component';
 import { NameField } from './name/name-field.component';
 import { PhoneField } from './phone/phone-field.component';
+import ClientRegistryLookupSection from '../client-registry-search/client-registry-search.component';
 import { EmailField } from './email/email-field.component';
 import { NextOfKinRelationshipField } from './next-of-kin/relationship/next-of-kin-relationship-field.component';
 import { NextOfKinPhoneField } from './next-of-kin/phone/next-of-kin-phone-field.component';
@@ -54,6 +55,8 @@ export function Field({ name }: FieldProps) {
       return <Identifiers />;
     case 'phone':
       return <PhoneField />;
+    case 'clientRegistrySearch':
+      return <ClientRegistryLookupSection />;
     case 'nextOfKinName':
       return <NextOfKinNameField />;
     case 'nextOfKinRelationship':

@@ -139,9 +139,28 @@ export interface RegistrationConfig {
     registrationFormUuid: string | null;
   };
   freeTextFieldConceptUuid: string;
+  clientRegistry?: ClientRegistryConfig;
+}
+
+export interface IdentifierType {
+  value: string;
+  label?: string;
+}
+
+export interface ClientRegistryConfig {
+  enabled: boolean;
+  identifierTypes: Array<IdentifierType>;
+  otpVerificationEndpoint: string;
+  patientDataFetchEndpoint: string;
+  autoPopulateFields: boolean;
 }
 
 export const builtInSections: Array<SectionDefinition> = [
+  {
+    id: 'clientRegistry',
+    name: 'Client Registry',
+    fields: ['clientRegistrySearch'],
+  },
   {
     id: 'demographics',
     name: 'Basic Info',
@@ -164,6 +183,7 @@ export const builtInSections: Array<SectionDefinition> = [
 
 // These fields are handled specially in field.component.tsx
 export const builtInFields = [
+  'clientRegistrySearch',
   'name',
   'gender',
   'dob',
@@ -185,7 +205,7 @@ export const builtInFields = [
 export const esmPatientRegistrationSchema = {
   sections: {
     _type: Type.Array,
-    _default: ['demographics', 'contact', 'academicOccupation', 'nextOfKin', 'relationships'],
+    _default: ['clientRegistry', 'demographics', 'contact', 'academicOccupation', 'nextOfKin', 'relationships'],
     _description: `An array of strings which are the keys from 'sectionDefinitions' or any of the following built-in sections: '${builtInSections
       .map((s) => s.id)
       .join("', '")}'.`,
@@ -584,6 +604,37 @@ export const esmPatientRegistrationSchema = {
       },
     ),
   ],
+  clientRegistry: {
+    enabled: {
+      _type: Type.Boolean,
+      _default: false,
+      _description: 'Enable the Client Registry search and verification section.',
+    },
+    identifierTypes: {
+      _type: Type.Array,
+      _default: [],
+      _description: 'The list of identifier types to show in the dropdown.',
+      _elements: {
+        value: { _type: Type.String },
+        label: { _type: Type.String, _default: '' },
+      },
+    },
+    otpVerificationEndpoint: {
+      _type: Type.String,
+      _default: '',
+      _description: 'The endpoint for verifying the OTP.',
+    },
+    patientDataFetchEndpoint: {
+      _type: Type.String,
+      _default: '',
+      _description: 'The endpoint to fetch patient data after successful OTP verification.',
+    },
+    autoPopulateFields: {
+      _type: Type.Boolean,
+      _default: false,
+      _description: 'Whether to automatically populate form fields with the fetched data.',
+    },
+  },
 };
 
 function stringifyDefinitions(sectionDefinitions: Array<SectionDefinition | FieldDefinition>) {
