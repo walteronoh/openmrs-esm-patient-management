@@ -29,12 +29,11 @@ export function setIdentifierSource(
   return {
     selectedSource: identifierSource,
     autoGeneration,
-    identifierValue:
-      autoGeneration && !manualEntryEnabled
-        ? 'auto-generated'
-        : identifierValue !== 'auto-generated'
-          ? identifierValue
-          : initialValue,
+    identifierValue: autoGeneration
+      ? 'auto-generated'
+      : identifierValue !== 'auto-generated'
+        ? identifierValue
+        : initialValue,
   };
 }
 
