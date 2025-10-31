@@ -1,13 +1,18 @@
 import React, { useState } from 'react';
-import { Button, TextInput, InlineLoading, InlineNotification } from '@carbon/react';
+import { Button, TextInput, InlineLoading, InlineNotification, Select, SelectItem } from '@carbon/react';
 import { showSnackbar } from '@openmrs/esm-framework';
 import { useFormikContext } from 'formik';
 import styles from '../patient-registration.scss';
-import { requestCustomOtp, validateCustomOtp, fetchClientRegistryData } from './client-registry.resource';
+import {
+  requestCustomOtp,
+  validateCustomOtp,
+  fetchClientRegistryData,
+  type RequestCustomOtpDto,
+} from './client-registry.resource';
 import { applyClientRegistryMapping } from './map-client-registry-to-form-utils';
 
 export interface ClientRegistryLookupSectionProps {
-  onClientVerified?: () => void;
+  onClientVerified?: (payload: RequestCustomOtpDto) => void;
 }
 
 const ClientRegistryLookupSection: React.FC<ClientRegistryLookupSectionProps> = ({ onClientVerified }) => {
@@ -19,8 +24,15 @@ const ClientRegistryLookupSection: React.FC<ClientRegistryLookupSectionProps> = 
   const [loading, setLoading] = useState(false);
   const [sessionId, setSessionId] = useState('');
   const [error, setError] = useState<string>('');
+  const [identificationType, setIdentificationType] = useState('National ID');
 
   const locationUuid = '18c343eb-b353-462a-9139-b16606e6b6c2';
+  const identificationTypes = [
+    { text: 'National ID', value: 'National ID' },
+    { text: 'Refugee ID', value: 'Refugee ID' },
+    { text: 'Alien ID', value: 'Alien ID' },
+    { text: 'Mandate Number', value: 'Mandate Number' },
+  ];
 
   async function withTimeout<T>(promise: Promise<T>, ms = 10000): Promise<T> {
     const controller = new AbortController();
@@ -45,7 +57,7 @@ const ClientRegistryLookupSection: React.FC<ClientRegistryLookupSectionProps> = 
     try {
       const payload = {
         identificationNumber: identifier,
-        identificationType: 'National ID',
+        identificationType: identificationType,
         locationUuid,
       };
       const result = await withTimeout(fetchClientRegistryData(payload));
@@ -87,7 +99,7 @@ const ClientRegistryLookupSection: React.FC<ClientRegistryLookupSectionProps> = 
     try {
       const payload = {
         identificationNumber: identifier,
-        identificationType: 'National ID',
+        identificationType: identificationType,
         locationUuid,
       };
       const response = await withTimeout(requestCustomOtp(payload));
@@ -128,8 +140,13 @@ const ClientRegistryLookupSection: React.FC<ClientRegistryLookupSectionProps> = 
       };
       await withTimeout(validateCustomOtp(payload));
 
+      const customOtpPayload = {
+        identificationNumber: identifier,
+        identificationType: identificationType,
+        locationUuid,
+      };
       setOtpVerified(true);
-      onClientVerified?.();
+      onClientVerified?.(customOtpPayload);
       showSnackbar({
         kind: 'success',
         title: 'OTP Verified',
@@ -157,6 +174,14 @@ const ClientRegistryLookupSection: React.FC<ClientRegistryLookupSectionProps> = 
           <InlineNotification title="Error" subtitle={error} kind="error" lowContrast />
         </div>
       )}
+
+      <div className={styles.fieldGroup}>
+        <Select labelText="Select Identification Type" onChange={(e) => setIdentificationType(e.target.value)}>
+          {identificationTypes.map((item) => (
+            <SelectItem text={item.text} value={item.value} />
+          ))}
+        </Select>
+      </div>
 
       <div className={styles.fieldGroup}>
         <TextInput
