@@ -21,7 +21,7 @@ import {
   patientObjFields,
   personSyncFields,
 } from './map-client-registry-to-form-utils';
-import { updateAmrsPersonAttributes, updateAmrsPersonIdentifiers } from './client-registry.resource';
+import { updatePerson, updateAmrsPersonIdentifiers } from './client-registry.resource';
 import { showSnackbar } from '@openmrs/esm-framework';
 
 interface ClientRegistryPatientDetailsProps {
@@ -126,7 +126,7 @@ const ClientRegistryPatientDetails: React.FC<ClientRegistryPatientDetailsProps> 
         }
       });
       Object.assign(patientPayload, otherFields, { addresses: [addresses] }, { names: [names] });
-      await updateAmrsPersonAttributes(amrsPerson.uuid, patientPayload);
+      await updatePerson(amrsPerson.uuid, patientPayload);
 
       // Identifiers
       Object.entries(payload).forEach(async ([k, v]) => {
