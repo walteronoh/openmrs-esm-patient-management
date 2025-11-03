@@ -3,13 +3,9 @@ import { Button, TextInput, InlineLoading, InlineNotification, Select, SelectIte
 import { showSnackbar } from '@openmrs/esm-framework';
 import { useFormikContext } from 'formik';
 import styles from '../patient-registration.scss';
-import {
-  requestCustomOtp,
-  validateCustomOtp,
-  fetchClientRegistryData,
-  type RequestCustomOtpDto,
-} from './client-registry.resource';
+import { requestCustomOtp, validateCustomOtp, fetchClientRegistryData } from './client-registry.resource';
 import { applyClientRegistryMapping } from './map-client-registry-to-form-utils';
+import { type RequestCustomOtpDto } from './client-registry.types';
 
 export interface ClientRegistryLookupSectionProps {
   onClientVerified?: (payload: RequestCustomOtpDto) => void;

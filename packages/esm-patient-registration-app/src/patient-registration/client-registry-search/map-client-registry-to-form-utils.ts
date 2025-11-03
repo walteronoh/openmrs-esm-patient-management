@@ -1,3 +1,10 @@
+import {
+  type AmrsPerson,
+  type ClientRegistryBody,
+  HieIdentificationType,
+  IdentifierTypesUuids,
+} from './client-registry.types';
+
 interface PatientData {
   [key: string]: any;
 }
@@ -169,3 +176,210 @@ export function applyClientRegistryMapping(patient: PatientData, setFieldValue: 
   mapAddresses(patient, setFieldValue);
   mapContactDetails(patient, setFieldValue);
 }
+
+export const nameFields = ['givenName', 'middleName', 'familyName'];
+
+export const addressFields = [
+  'country',
+  'countyDistrict',
+  'address2',
+  'address7',
+  'cityVillage',
+  'longitude',
+  'latitude',
+];
+
+export const personSyncFields = [...nameFields, 'gender', 'birthdate', ...addressFields];
+
+export const identifiersSyncFields = () => Object.keys(HieIdentificationType);
+
+export const getIdentifierUuid = (identifier: string) => {
+  let val = '';
+  switch (identifier) {
+    case HieIdentificationType.AlienID:
+      val = IdentifierTypesUuids.ALIEN_ID_UUID;
+      break;
+    case HieIdentificationType.HouseholdNumber:
+      val = IdentifierTypesUuids.HOUSE_HOLD_NUMBER_UUID;
+      break;
+    case HieIdentificationType.MandateNumber:
+      val = IdentifierTypesUuids.MANDATE_NUMBER_UUID;
+      break;
+    case HieIdentificationType.Cr:
+      val = IdentifierTypesUuids.CLIENT_REGISTRY_NO_UUID;
+      break;
+    case HieIdentificationType.NationalID:
+      val = IdentifierTypesUuids.NATIONAL_ID_UUID;
+      break;
+    case HieIdentificationType.RefugeeID:
+      val = IdentifierTypesUuids.REFUGEE_ID_UUID;
+      break;
+    case HieIdentificationType.SHANumber:
+      val = IdentifierTypesUuids.SHA_UUID;
+      break;
+    case HieIdentificationType.TemporaryDependantID:
+      val = IdentifierTypesUuids.TEMPORARY_DEPENDANT_ID_UUID;
+      break;
+    default:
+      throw 'Identifier not found';
+  }
+  return val;
+};
+
+export const patientObjFields = [...personSyncFields, ...identifiersSyncFields()];
+
+const sanitizeValue = (value: unknown) => {
+  if (value === null || value === undefined) {
+    return '';
+  }
+  return value;
+};
+
+export const mapFieldValue = (field: string, hieData: ClientRegistryBody, amrsPerson: AmrsPerson): Array<string> => {
+  let arr = [];
+  switch (field) {
+    case 'givenName':
+      arr = [sanitizeValue(amrsPerson?.person?.preferredName?.givenName), sanitizeValue(hieData?.first_name)];
+      break;
+    case 'middleName':
+      arr = [sanitizeValue(amrsPerson?.person?.preferredName?.middleName), sanitizeValue(hieData?.middle_name)];
+      break;
+    case 'familyName':
+      arr = [sanitizeValue(amrsPerson?.person?.preferredName?.familyName), sanitizeValue(hieData?.last_name)];
+      break;
+    case 'gender':
+      arr = [sanitizeValue(amrsPerson?.person?.gender), sanitizeValue(hieData?.gender)];
+      break;
+    case 'birthdate':
+      arr = [sanitizeValue(amrsPerson?.person?.birthdate), sanitizeValue(hieData?.date_of_birth)];
+      break;
+    case 'country':
+      arr = [sanitizeValue(amrsPerson?.person?.preferredAddress?.country), sanitizeValue(hieData?.country)];
+      break;
+    case 'countyDistrict':
+      arr = [sanitizeValue(amrsPerson?.person?.preferredAddress?.countyDistrict), sanitizeValue(hieData?.county)];
+      break;
+    case 'address2':
+      arr = [sanitizeValue(amrsPerson?.person?.preferredAddress?.address2), sanitizeValue(hieData?.sub_county)];
+      break;
+    case 'address7':
+      arr = [sanitizeValue(amrsPerson?.person?.preferredAddress?.address7), sanitizeValue(hieData?.ward)];
+      break;
+    case 'cityVillage':
+      arr = [sanitizeValue(amrsPerson?.person?.preferredAddress?.cityVillage), sanitizeValue(hieData?.village_estate)];
+      break;
+    case 'longitude':
+      arr = [sanitizeValue(amrsPerson?.person?.preferredAddress?.longitude), sanitizeValue(hieData?.longitude)];
+      break;
+    case 'latitude':
+      arr = [sanitizeValue(amrsPerson?.person?.preferredAddress?.latitude), sanitizeValue(hieData?.latitude)];
+      break;
+    case 'NationalID':
+      arr = [
+        sanitizeValue(
+          amrsPerson?.identifiers.find(
+            (v) => v.identifierType.uuid === getIdentifierUuid(HieIdentificationType.NationalID),
+          )?.identifier,
+        ),
+        sanitizeValue(
+          hieData.other_identifications.find((v) => v.identification_type === HieIdentificationType.NationalID)
+            ?.identification_number,
+        ),
+      ];
+      break;
+    case 'SHANumber':
+      arr = [
+        sanitizeValue(
+          amrsPerson?.identifiers.find(
+            (v) => v.identifierType.uuid === getIdentifierUuid(HieIdentificationType.SHANumber),
+          )?.identifier,
+        ),
+        sanitizeValue(
+          hieData.other_identifications.find((v) => v.identification_type === HieIdentificationType.SHANumber)
+            ?.identification_number,
+        ),
+      ];
+      break;
+    case 'HouseholdNumber':
+      arr = [
+        sanitizeValue(
+          amrsPerson?.identifiers.find(
+            (v) => v.identifierType.uuid === getIdentifierUuid(HieIdentificationType.HouseholdNumber),
+          )?.identifier,
+        ),
+        sanitizeValue(
+          hieData.other_identifications.find((v) => v.identification_type === HieIdentificationType.HouseholdNumber)
+            ?.identification_number,
+        ),
+      ];
+      break;
+    case 'RefugeeID':
+      arr = [
+        sanitizeValue(
+          amrsPerson?.identifiers.find(
+            (v) => v.identifierType.uuid === getIdentifierUuid(HieIdentificationType.RefugeeID),
+          )?.identifier,
+        ),
+        sanitizeValue(
+          hieData.other_identifications.find((v) => v.identification_type === HieIdentificationType.RefugeeID)
+            ?.identification_number,
+        ),
+      ];
+      break;
+    case 'AlienID':
+      arr = [
+        sanitizeValue(
+          amrsPerson?.identifiers.find(
+            (v) => v.identifierType.uuid === getIdentifierUuid(HieIdentificationType.AlienID),
+          )?.identifier,
+        ),
+        sanitizeValue(
+          hieData.other_identifications.find((v) => v.identification_type === HieIdentificationType.AlienID)
+            ?.identification_number,
+        ),
+      ];
+      break;
+    case 'MandateNumber':
+      arr = [
+        sanitizeValue(
+          amrsPerson?.identifiers.find(
+            (v) => v.identifierType.uuid === getIdentifierUuid(HieIdentificationType.MandateNumber),
+          )?.identifier,
+        ),
+        sanitizeValue(
+          hieData.other_identifications.find((v) => v.identification_type === HieIdentificationType.MandateNumber)
+            ?.identification_number,
+        ),
+      ];
+      break;
+    case 'Cr':
+      arr = [
+        sanitizeValue(
+          amrsPerson?.identifiers.find((v) => v.identifierType.uuid === getIdentifierUuid(HieIdentificationType.Cr))
+            ?.identifier,
+        ),
+        sanitizeValue(
+          hieData.other_identifications.find((v) => v.identification_type === HieIdentificationType.Cr)
+            ?.identification_number,
+        ),
+      ];
+      break;
+    case 'TemporaryDependantID':
+      arr = [
+        sanitizeValue(
+          amrsPerson?.identifiers.find(
+            (v) => v.identifierType.uuid === getIdentifierUuid(HieIdentificationType.TemporaryDependantID),
+          )?.identifier,
+        ),
+        sanitizeValue(
+          hieData.other_identifications.find(
+            (v) => v.identification_type === HieIdentificationType.TemporaryDependantID,
+          )?.identification_number,
+        ),
+      ];
+      break;
+    default:
+      arr = ['', ''];
+  }
+  return arr;
+};

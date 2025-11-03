@@ -3,7 +3,7 @@ import { Button } from '@carbon/react';
 import { showModal } from '@openmrs/esm-framework';
 import ClientRegistryLookupSection from './client-registry-search.component';
 import { Formik } from 'formik';
-import { type RequestCustomOtpDto } from './client-registry.resource';
+import { type RequestCustomOtpDto } from './client-registry.types';
 import ClientRegistryDetails from './client-registry-details.component';
 // import { useInitialPatientRelationships } from '../section/patient-relationships/relationships.resource';
 
