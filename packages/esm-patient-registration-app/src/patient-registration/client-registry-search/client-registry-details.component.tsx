@@ -1,16 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Tabs, TabList, Tab, TabPanels, TabPanel, InlineLoading } from '@carbon/react';
 import { showSnackbar, usePatient } from '@openmrs/esm-framework';
-import {
-  type RequestCustomOtpDto,
-  type ClientRegistryBody,
-  fetchClientRegistryData,
-  type AmrsPerson,
-  fetchAmrsPersonData,
-} from './client-registry.resource';
+import { type RequestCustomOtpDto, type ClientRegistryBody, type AmrsPerson } from './client-registry.types';
 import ClientRegistryPatientDetails from './client-registry-patient-details.component';
 import ClientRegistryDependantDetails from './client-registry-dependant-details.component';
 import { useInitialPatientRelationships } from '../section/patient-relationships/relationships.resource';
+import { fetchAmrsPersonData, fetchClientRegistryData } from './client-registry.resource';
 
 interface ClientRegistryDetailsProps {
   payload: RequestCustomOtpDto;
@@ -28,7 +23,8 @@ const ClientRegistryDetails: React.FC<ClientRegistryDetailsProps> = ({ payload }
     if (patientUuid) {
       handleAmrsPersonDetails();
     }
-  });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [patientUuid]);
 
   const handleAmrsPersonDetails = async () => {
     try {
