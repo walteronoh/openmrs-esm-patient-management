@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { Tabs, TabList, Tab, TabPanels, TabPanel, InlineLoading } from '@carbon/react';
 import { showSnackbar, usePatient } from '@openmrs/esm-framework';
-import { type RequestCustomOtpDto, type ClientRegistryBody, type AmrsPerson } from './client-registry.types';
+import {
+  type RequestCustomOtpDto,
+  type ClientRegistryBody,
+  type AmrsPerson,
+  type CustomRelationship,
+} from './client-registry.types';
 import ClientRegistryPatientDetails from './client-registry-patient-details.component';
 import ClientRegistryDependantDetails from './client-registry-dependant-details.component';
-import { useInitialPatientRelationships } from '../section/patient-relationships/relationships.resource';
-import { fetchAmrsPersonData, fetchClientRegistryData } from './client-registry.resource';
+import { fetchAmrsPersonData, fetchClientRegistryData, getRelationships } from './client-registry.resource';
 
 interface ClientRegistryDetailsProps {
   payload: RequestCustomOtpDto;
@@ -16,15 +20,23 @@ const ClientRegistryDetails: React.FC<ClientRegistryDetailsProps> = ({ payload }
   const [amrsPerson, setAmrsPerson] = useState<AmrsPerson>();
   const [loading, setLoading] = useState<boolean>(false);
   const { patientUuid } = usePatient();
-  const { data: relationships } = useInitialPatientRelationships('');
+  const [relationships, setRelationships] = useState<Array<CustomRelationship>>([]);
 
   useEffect(() => {
     handleHiePatientDetails();
     if (patientUuid) {
       handleAmrsPersonDetails();
+      handleFetchPatientRelationships();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [patientUuid]);
+
+  const handleFetchPatientRelationships = async () => {
+    const resp = await getRelationships(patientUuid);
+    if (resp) {
+      setRelationships(resp);
+    }
+  };
 
   const handleAmrsPersonDetails = async () => {
     try {
@@ -79,7 +91,15 @@ const ClientRegistryDetails: React.FC<ClientRegistryDetailsProps> = ({ payload }
       <TabPanels>
         <TabPanel>{hieData && <ClientRegistryPatientDetails hieData={hieData} amrsPerson={amrsPerson} />}</TabPanel>
         <TabPanel>
-          {hieData && hieData.dependants ? <ClientRegistryDependantDetails /> : <div>Dependants not found.</div>}
+          {hieData && hieData.dependants ? (
+            <ClientRegistryDependantDetails
+              hieDependants={hieData.dependants}
+              amrsPerson={amrsPerson}
+              patientRelationships={relationships}
+            />
+          ) : (
+            <div>Dependants not found.</div>
+          )}
         </TabPanel>
       </TabPanels>
     </Tabs>

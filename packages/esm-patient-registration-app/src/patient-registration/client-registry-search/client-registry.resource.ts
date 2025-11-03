@@ -8,6 +8,7 @@ import {
   type ValidateCustomOtpResponse,
   type ValidateHieCustomOtpDto,
 } from './client-registry.types';
+import { mapAmrsPatientRelationship } from './map-client-registry-to-form-utils';
 
 const HIE_BASE_URL = 'https://ngx.ampath.or.ke/hie';
 
@@ -76,12 +77,45 @@ export async function updateAmrsPersonIdentifiers(patientUuid: string, payload: 
   });
 }
 
-export async function updateAmrsPersonAttributes(patientUuid: string, payload: unknown) {
-  return await openmrsFetch(`${restBaseUrl}/person/${patientUuid}`, {
+export async function updatePerson(patientUuid: string, payload: unknown) {
+  return await openmrsFetch<AmrsPerson>(`${restBaseUrl}/person/${patientUuid}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
     body: payload,
   });
+}
+
+export async function createPerson(payload: unknown) {
+  return await openmrsFetch<AmrsPerson>(`${restBaseUrl}/person`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: payload,
+  });
+}
+
+export async function createRelationship(payload: unknown) {
+  return await openmrsFetch(`${restBaseUrl}/relationship`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: payload,
+  });
+}
+
+export async function getRelationships(patientUuid: string) {
+  const response = await openmrsFetch(`${restBaseUrl}/relationship?person=${patientUuid}&v=full`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+  if (response && response.data) {
+    return mapAmrsPatientRelationship(patientUuid, response.data.results);
+  }
+  return [];
 }

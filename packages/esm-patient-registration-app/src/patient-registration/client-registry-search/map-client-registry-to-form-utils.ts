@@ -1,6 +1,8 @@
+import dayjs from 'dayjs';
 import {
   type AmrsPerson,
   type ClientRegistryBody,
+  type CustomRelationship,
   HieIdentificationType,
   IdentifierTypesUuids,
 } from './client-registry.types';
@@ -282,7 +284,7 @@ export const mapFieldValue = (field: string, hieData: ClientRegistryBody, amrsPe
           )?.identifier,
         ),
         sanitizeValue(
-          hieData.other_identifications.find((v) => v.identification_type === HieIdentificationType.NationalID)
+          hieData?.other_identifications.find((v) => v.identification_type === HieIdentificationType.NationalID)
             ?.identification_number,
         ),
       ];
@@ -295,7 +297,7 @@ export const mapFieldValue = (field: string, hieData: ClientRegistryBody, amrsPe
           )?.identifier,
         ),
         sanitizeValue(
-          hieData.other_identifications.find((v) => v.identification_type === HieIdentificationType.SHANumber)
+          hieData?.other_identifications.find((v) => v.identification_type === HieIdentificationType.SHANumber)
             ?.identification_number,
         ),
       ];
@@ -308,7 +310,7 @@ export const mapFieldValue = (field: string, hieData: ClientRegistryBody, amrsPe
           )?.identifier,
         ),
         sanitizeValue(
-          hieData.other_identifications.find((v) => v.identification_type === HieIdentificationType.HouseholdNumber)
+          hieData?.other_identifications.find((v) => v.identification_type === HieIdentificationType.HouseholdNumber)
             ?.identification_number,
         ),
       ];
@@ -321,7 +323,7 @@ export const mapFieldValue = (field: string, hieData: ClientRegistryBody, amrsPe
           )?.identifier,
         ),
         sanitizeValue(
-          hieData.other_identifications.find((v) => v.identification_type === HieIdentificationType.RefugeeID)
+          hieData?.other_identifications.find((v) => v.identification_type === HieIdentificationType.RefugeeID)
             ?.identification_number,
         ),
       ];
@@ -334,7 +336,7 @@ export const mapFieldValue = (field: string, hieData: ClientRegistryBody, amrsPe
           )?.identifier,
         ),
         sanitizeValue(
-          hieData.other_identifications.find((v) => v.identification_type === HieIdentificationType.AlienID)
+          hieData?.other_identifications.find((v) => v.identification_type === HieIdentificationType.AlienID)
             ?.identification_number,
         ),
       ];
@@ -347,7 +349,7 @@ export const mapFieldValue = (field: string, hieData: ClientRegistryBody, amrsPe
           )?.identifier,
         ),
         sanitizeValue(
-          hieData.other_identifications.find((v) => v.identification_type === HieIdentificationType.MandateNumber)
+          hieData?.other_identifications.find((v) => v.identification_type === HieIdentificationType.MandateNumber)
             ?.identification_number,
         ),
       ];
@@ -359,7 +361,7 @@ export const mapFieldValue = (field: string, hieData: ClientRegistryBody, amrsPe
             ?.identifier,
         ),
         sanitizeValue(
-          hieData.other_identifications.find((v) => v.identification_type === HieIdentificationType.Cr)
+          hieData?.other_identifications.find((v) => v.identification_type === HieIdentificationType.Cr)
             ?.identification_number,
         ),
       ];
@@ -372,7 +374,7 @@ export const mapFieldValue = (field: string, hieData: ClientRegistryBody, amrsPe
           )?.identifier,
         ),
         sanitizeValue(
-          hieData.other_identifications.find(
+          hieData?.other_identifications.find(
             (v) => v.identification_type === HieIdentificationType.TemporaryDependantID,
           )?.identification_number,
         ),
@@ -383,3 +385,52 @@ export const mapFieldValue = (field: string, hieData: ClientRegistryBody, amrsPe
   }
   return arr;
 };
+
+export function getPatientRelationshipPayload(
+  amrsPerson: AmrsPerson,
+  selectedRelationshipTypeUuid: string,
+  dependantUuid: string,
+) {
+  const startDate = dayjs().format('YYYY-MM-DDTHH:mm:ss.SSSZZ');
+  const patientRelationshipPayload = {
+    personA: amrsPerson.person.uuid,
+    relationshipType: selectedRelationshipTypeUuid,
+    personB: dependantUuid,
+    startDate: startDate,
+  };
+  return patientRelationshipPayload;
+}
+
+export function mapAmrsPatientRelationship(uuid: string, relationships: Array<any>) {
+  const relationshipsArr: Array<CustomRelationship> = [];
+  if (relationships) {
+    for (const relationship of relationships) {
+      if (uuid === relationship?.personA?.uuid) {
+        const relation = {
+          uuid: relationship?.uuid,
+          display: relationship?.personB?.display,
+          relative: relationship?.personB?.display,
+          relatedPersonUuid: relationship?.personB?.uuid,
+          relationshipType: relationship?.relationshipType?.bIsToA,
+          relationshipTypeUuId: relationship?.relationshipType?.uuid,
+          relationshipTypeName: relationship?.relationshipType?.display,
+          relatedPerson: relationship?.personB,
+        };
+        relationshipsArr.push(relation);
+      } else {
+        const relation = {
+          uuid: relationship?.uuid,
+          display: relationship?.personA?.display,
+          relative: relationship?.personA?.display,
+          relatedPersonUuid: relationship?.personA?.uuid,
+          relationshipType: relationship?.relationshipType?.aIsToB,
+          relatedPerson: relationship?.personA,
+          relationshipTypeUuId: relationship?.relationshipType?.uuid,
+          relationshipTypeName: relationship?.relationshipType?.display,
+        };
+        relationshipsArr.push(relation);
+      }
+    }
+  }
+  return relationshipsArr;
+}

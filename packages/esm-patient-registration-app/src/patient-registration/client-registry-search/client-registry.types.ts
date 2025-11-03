@@ -38,7 +38,7 @@ export type ClientRegistryBody = {
     identification_number: string;
     identification_type: string;
   }>;
-  dependants: Array<unknown>;
+  dependants: Array<ClientRegistryDependantBody>;
   citizenship: string;
   email: string;
   country: string;
@@ -51,6 +51,23 @@ export type ClientRegistryBody = {
   longitude: string;
   identification_number: string;
 };
+
+export type ClientRegistryDependantBody = {
+  relationship: string;
+  total: number;
+  result: Array<ClientRegistryBody>;
+};
+
+export interface CustomRelationship {
+  uuid: string;
+  display: string;
+  relative: string;
+  relatedPersonUuid: string;
+  relationshipType: string;
+  relationshipTypeUuId: string;
+  relationshipTypeName: string;
+  relatedPerson: any;
+}
 
 export interface AmrsPerson {
   uuid: string;
