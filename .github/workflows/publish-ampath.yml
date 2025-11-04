@@ -81,13 +81,9 @@ jobs:
         run: |
           cd packages/esm-patient-registration-app
           CURRENT_VERSION=$(node -e "console.log(require('./package.json').version)")
-          NEXT_VERSION="${CURRENT_VERSION}-next.${GITHUB_RUN_NUMBER}"
-          npm version $NEXT_VERSION --no-git-tag-version --legacy-peer-deps
-          rm -f package-lock.json node_modules -rf
+          NEXT_VERSION="${CURRENT_VERSION}-next.${{ github.run_number }}"
+          yarn version $NEXT_VERSION --immediate
           echo "Publishing version: $NEXT_VERSION"
-
-      - name: 🔄 Restore yarn workspace
-        run: yarn install --no-immutable
 
       - name: 🏗️ Build
         run: |
@@ -97,7 +93,7 @@ jobs:
       - name: 🚀 Publish to npm with next tag
         run: |
           cd packages/esm-patient-registration-app
-          npm publish --tag next --legacy-peer-deps
+          yarn npm publish --tag next --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
 
@@ -124,13 +120,10 @@ jobs:
       - name: 🏷️ Set release version
         run: |
           cd packages/esm-patient-registration-app
-          RELEASE_VERSION=${GITHUB_REF_NAME#v}  # Remove 'v' prefix if present
-          npm version $RELEASE_VERSION --no-git-tag-version --legacy-peer-deps
-          rm -f package-lock.json node_modules -rf
+          RELEASE_VERSION=${{ github.ref_name }}
+          RELEASE_VERSION=${RELEASE_VERSION#v}
+          yarn version $RELEASE_VERSION --immediate
           echo "Publishing release version: $RELEASE_VERSION"
-
-      - name: 🔄 Restore yarn workspace
-        run: yarn install --no-immutable
 
       - name: 🏗️ Build
         run: |
@@ -140,6 +133,6 @@ jobs:
       - name: 🚀 Publish to npm with latest tag
         run: |
           cd packages/esm-patient-registration-app
-          npm publish --tag latest --legacy-peer-deps
+          yarn npm publish --tag latest --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
