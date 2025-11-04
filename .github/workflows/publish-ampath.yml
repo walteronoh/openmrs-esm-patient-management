@@ -28,7 +28,7 @@ jobs:
           cache: 'yarn'
 
       - name: 📦 Install dependencies
-        run: yarn install --immutable
+        run: yarn install
 
       - name: 🚀 Setup local cache server for Turborepo
         uses: felixmosh/turborepo-gh-artifacts@v3
@@ -72,7 +72,7 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
 
       - name: 📦 Install dependencies
-        run: yarn install --immutable
+        run: yarn install
 
       - name: 🔧 Configure Git
         run: |
@@ -116,7 +116,7 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
 
       - name: 📦 Install dependencies
-        run: yarn install --immutable
+        run: yarn install
 
       - name: 🏷️ Set release version
         run: |
