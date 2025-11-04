@@ -1,12 +1,12 @@
 {
-  "name": "@openmrs/esm-patient-registration-app",
+  "name": "@ampath/esm-patient-registration-app",
   "version": "9.2.0",
   "description": "Patient registration microfrontend for O3",
   "browser": "dist/openmrs-esm-patient-registration-app.js",
   "main": "src/index.ts",
   "source": true,
   "license": "MPL-2.0",
-  "homepage": "https://github.com/openmrs/openmrs-esm-patient-management#readme",
+  "homepage": "https://github.com/AMPATH/openmrs-esm-patient-management#readme",
   "scripts": {
     "start": "openmrs develop",
     "serve": "webpack serve --mode=development",
@@ -24,17 +24,18 @@
     "extends browserslist-config-openmrs"
   ],
   "keywords": [
-    "openmrs"
+    "openmrs",
+    "ampath"
   ],
   "publishConfig": {
     "access": "public"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/openmrs/openmrs-esm-patient-management.git"
+    "url": "git+https://github.com/AMPATH/openmrs-esm-patient-management.git"
   },
   "bugs": {
-    "url": "https://github.com/openmrs/openmrs-esm-patient-management/issues"
+    "url": "https://github.com/AMPATH/openmrs-esm-patient-management/issues"
   },
   "dependencies": {
     "@carbon/react": "^1.83.0",
