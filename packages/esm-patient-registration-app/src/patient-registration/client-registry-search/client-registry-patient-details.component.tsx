@@ -27,6 +27,7 @@ import { showSnackbar } from '@openmrs/esm-framework';
 interface ClientRegistryPatientDetailsProps {
   hieData: ClientRegistryBody;
   amrsPerson: AmrsPerson;
+  fromDependant?: boolean;
 }
 
 interface GetTableDataRowProps {
@@ -47,6 +48,7 @@ const TableDataRow: React.FC<GetTableDataRowProps> = ({
   allChecked,
 }) => {
   const [checked, setChecked] = useState(false);
+  const randomString = Math.random().toString(36).substring(2, 6).toUpperCase();
   useEffect(() => {
     onChange?.(allChecked, field, hiePatient, true);
     setChecked(allChecked);
@@ -60,7 +62,7 @@ const TableDataRow: React.FC<GetTableDataRowProps> = ({
       <TableCell>{hiePatient}</TableCell>
       <TableCell>
         <Checkbox
-          id={`cbox-${field}`}
+          id={`cbox-${randomString}`}
           onChange={(e) => {
             onChange(e.target.checked, field, hiePatient, false);
             setChecked(e.target.checked);
@@ -72,11 +74,16 @@ const TableDataRow: React.FC<GetTableDataRowProps> = ({
   );
 };
 
-const ClientRegistryPatientDetails: React.FC<ClientRegistryPatientDetailsProps> = ({ hieData, amrsPerson }) => {
+const ClientRegistryPatientDetails: React.FC<ClientRegistryPatientDetailsProps> = ({
+  hieData,
+  amrsPerson,
+  fromDependant,
+}) => {
   const [syncFields, setSyncFields] = useState<Array<Record<string, string>>>([]);
   const [allChecked, setAllChecked] = useState(false);
   const [loading, setLoading] = useState(false);
   const locationUuid = '18c343eb-b353-462a-9139-b16606e6b6c2';
+  const randomString = Math.random().toString(36).substring(2, 6).toUpperCase();
 
   const handleFieldChange = (checked: boolean, field: string, value: string, multiple: boolean) => {
     if (multiple) {
@@ -119,38 +126,65 @@ const ClientRegistryPatientDetails: React.FC<ClientRegistryPatientDetailsProps> 
           }
           // addresses
           else if (addressFields.includes(k)) {
-            addresses[k] = v;
+            if (v) {
+              addresses[k] = v;
+            }
           } else {
             otherFields[k] = v;
           }
         }
       });
       Object.assign(patientPayload, otherFields, { addresses: [addresses] }, { names: [names] });
-      await updatePerson(amrsPerson.uuid, patientPayload);
+      await updatePerson(amrsPerson.person.uuid, patientPayload);
+      showSnackbar({
+        kind: 'success',
+        title: 'Patient successfully synced.',
+      });
 
       // Identifiers
       Object.entries(payload).forEach(async ([k, v]) => {
         if (identifiersSyncFields().includes(k)) {
-          const identifierUuid = getIdentifierUuid(HieIdentificationType[k]);
-          const identifierPayload = {
-            identifier: v,
-            location: locationUuid,
-            identifierType: identifierUuid,
-          };
-          await updateAmrsPersonIdentifiers(amrsPerson.uuid, identifierPayload);
+          if (v) {
+            const identifierUuid = getIdentifierUuid(HieIdentificationType[k]);
+            const identifierPayload = {
+              identifier: v,
+              location: locationUuid,
+              identifierType: identifierUuid,
+            };
+            try {
+              // Check if the identifier exists
+              if (amrsPerson?.person?.identifiers?.find((i) => i.identifierType.uuid === identifierUuid)) {
+                // update to have the selected identifier
+                await updateAmrsPersonIdentifiers(
+                  amrsPerson.person.uuid,
+                  identifierUuid + '',
+                  identifierPayload,
+                  fromDependant,
+                );
+              } else {
+                // create to have the blank identifier
+                await updateAmrsPersonIdentifiers(amrsPerson.person.uuid, '', identifierPayload, fromDependant);
+              }
+            } catch (err) {
+              showSnackbar({
+                kind: 'error',
+                title: 'Error syncing patient identifiers.',
+              });
+            }
+          }
         }
+      });
+      showSnackbar({
+        kind: 'success',
+        title: 'Patient identifiers successfully synced.',
       });
 
       setSyncFields([]);
-      showSnackbar({
-        kind: 'success',
-        title: 'Amrs data successfully synced.',
-      });
     } catch (err) {
       showSnackbar({
         kind: 'error',
         title: 'Error syncing patient data.',
-        subtitle: JSON.stringify(err),
+        subtitle: JSON.stringify(err?.error?.message),
       });
     } finally {
       setLoading(false);
@@ -170,7 +204,7 @@ const ClientRegistryPatientDetails: React.FC<ClientRegistryPatientDetailsProps> 
             <TableHeader>AMRS Person</TableHeader>
             <TableHeader>HIE Patient</TableHeader>
             <TableHeader>
-              <Checkbox id="cbox-multiple" onChange={(e) => handleCheckAll(e)} />
+              <Checkbox id={`cbox-multiple-${randomString}`} onChange={(e) => handleCheckAll(e)} />
             </TableHeader>
           </TableRow>
         </TableHead>
