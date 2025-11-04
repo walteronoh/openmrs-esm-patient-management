@@ -85,8 +85,13 @@ jobs:
           npm version $NEXT_VERSION --no-git-tag-version --legacy-peer-deps
           echo "Publishing version: $NEXT_VERSION"
 
+      - name: 🔄 Restore yarn workspace
+        run: yarn install
+
       - name: 🏗️ Build
-        run: yarn ampath:build
+        run: |
+          cd packages/esm-patient-registration-app
+          yarn build
 
       - name: 🚀 Publish to npm with next tag
         run: |
@@ -122,8 +127,13 @@ jobs:
           npm version $RELEASE_VERSION --no-git-tag-version --legacy-peer-deps
           echo "Publishing release version: $RELEASE_VERSION"
 
+      - name: 🔄 Restore yarn workspace
+        run: yarn install
+
       - name: 🏗️ Build
-        run: yarn ampath:build
+        run: |
+          cd packages/esm-patient-registration-app
+          yarn build
 
       - name: 🚀 Publish to npm with latest tag
         run: |
