@@ -1,5 +1,5 @@
 {
-  "name": "@openmrs/esm-patient-management",
+  "name": "@ampath/esm-patient-management",
   "version": "9.2.0",
   "private": true,
   "description": "Patient management microfrontend for the OpenMRS 3.x frontend",
@@ -9,8 +9,8 @@
   "scripts": {
     "start": "openmrs develop",
     "dev": "openmrs develop --backend=https://staging.ampath.or.ke --api-url=/openmrs --config-url=https://ngx.ampath.or.ke/o3-config.json --sources=packages/esm-patient-registration-app --port=9000",
-    "ci:publish": "yarn workspaces foreach --all --topological --exclude @openmrs/esm-patient-management npm publish --access public --tag latest",
-    "ci:prepublish": "yarn workspaces foreach --all --topological --exclude @openmrs/esm-patient-management npm publish --access public --tag next",
+    "ci:publish": "yarn workspaces foreach --all --topological --exclude @ampath/esm-patient-management npm publish --access public --tag latest",
+    "ci:prepublish": "yarn workspaces foreach --all --topological --exclude @ampath/esm-patient-management npm publish --access public --tag next",
     "ampath:publish": "yarn workspace @ampath/esm-patient-registration-app npm publish --access public --tag latest",
     "ampath:prepublish": "yarn workspace @ampath/esm-patient-registration-app npm publish --access public --tag next",
     "ampath:build": "yarn workspace @ampath/esm-patient-registration-app build",
