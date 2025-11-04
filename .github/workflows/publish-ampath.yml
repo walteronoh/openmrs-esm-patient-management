@@ -90,12 +90,12 @@ jobs:
           cd packages/esm-patient-registration-app
           yarn build
 
-      - name: 🚀 Publish to npm with next tag
+      - name: � Publish to npm with next tag
         run: |
           cd packages/esm-patient-registration-app
           yarn npm publish --tag next --access public
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+          YARN_NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
 
   publish-release:
     runs-on: ubuntu-latest
@@ -130,9 +130,9 @@ jobs:
           cd packages/esm-patient-registration-app
           yarn build
 
-      - name: 🚀 Publish to npm with latest tag
+      - name: � Publish to npm with latest tag
         run: |
           cd packages/esm-patient-registration-app
           yarn npm publish --tag latest --access public
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+          YARN_NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
