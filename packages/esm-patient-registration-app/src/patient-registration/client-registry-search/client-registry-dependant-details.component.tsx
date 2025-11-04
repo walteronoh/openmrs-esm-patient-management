@@ -7,6 +7,9 @@ import {
   ExpandableTile,
   TileAboveTheFoldContent,
   TileBelowTheFoldContent,
+  Accordion,
+  AccordionItem,
+  ButtonSet,
 } from '@carbon/react';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -26,6 +29,7 @@ import ClientRegistryPatientDetails from './client-registry-patient-details.comp
 import {
   addressFields,
   getIdentifierUuid,
+  getPatientAttributes,
   getPatientRelationshipPayload,
   identifiersSyncFields,
   mapFieldValue,
@@ -33,6 +37,7 @@ import {
   patientObjFields,
   personSyncFields,
 } from './map-client-registry-to-form-utils';
+import { showSnackbar } from '@openmrs/esm-framework';
 
 interface ClientRegistryDependantDetailsProps {
   hieDependants: Array<ClientRegistryDependantBody>;
@@ -54,63 +59,79 @@ const ClientDependantTile: React.FC<ClientDependantTileProps> = ({ dependant, pa
   const locationUuid = '18c343eb-b353-462a-9139-b16606e6b6c2';
 
   const handleCreateDependant = async (dependantBody: ClientRegistryDependantBody) => {
-    const syncFields = {};
-    patientObjFields.forEach((field) => {
-      let fieldArr = mapFieldValue(field, dependantBody.result[0], amrsPerson);
-      const hieFieldValue = fieldArr[1];
-      syncFields[field] = hieFieldValue;
-    });
+    try {
+      const syncFields = {};
+      patientObjFields.forEach((field) => {
+        let fieldArr = mapFieldValue(field, dependantBody.result[0], amrsPerson);
+        const hieFieldValue = fieldArr[1];
+        syncFields[field] = hieFieldValue;
+      });
 
-    // Person
-    const patientPayload = {};
-    const names = {};
-    const addresses = {};
-    const otherFields = {};
-    Object.entries(syncFields).forEach(([k, v]) => {
-      if (personSyncFields.includes(k)) {
-        // names
-        if (nameFields.includes(k)) {
-          names[k] = v;
-        }
-        // addresses
-        else if (addressFields.includes(k)) {
-          if (v) {
-            addresses[k] = v;
+      // Person
+      const patientPayload = {};
+      const names = {};
+      const addresses = {};
+      const otherFields = {};
+      const attributes = getPatientAttributes(dependantBody.result[0]);
+      Object.entries(syncFields).forEach(([k, v]) => {
+        if (personSyncFields.includes(k)) {
+          // names
+          if (nameFields.includes(k)) {
+            names[k] = v;
           }
-        } else {
-          otherFields[k] = v;
+          // addresses
+          else if (addressFields.includes(k)) {
+            if (v) {
+              addresses[k] = v;
+            }
+          } else {
+            otherFields[k] = v;
+          }
         }
+      });
+      Object.assign(
+        patientPayload,
+        otherFields,
+        { addresses: [addresses] },
+        { names: [names] },
+        { attributes: attributes },
+      );
+      const response = await createPerson(patientPayload);
+      if (response && response.data) {
+        showSnackbar({
+          kind: 'success',
+          title: 'Dependant created successfully.',
+        });
+        const relationshipPayload = getPatientRelationshipPayload(
+          amrsPerson,
+          dependantBody.relationship,
+          response.data.uuid,
+        );
+        await createRelationship(relationshipPayload);
+        showSnackbar({
+          kind: 'success',
+          title: 'Dependant relationship created successfully.',
+        });
       }
-    });
-    Object.assign(patientPayload, otherFields, { addresses: [addresses] }, { names: [names] });
-    const response = await createPerson(patientPayload);
-    if (response && response.data) {
-      const relationshipPayload = getPatientRelationshipPayload(amrsPerson, selectedRelationship, response.data.uuid);
-      await createRelationship(relationshipPayload);
+    } catch (err) {
+      showSnackbar({
+        kind: 'error',
+        title: 'Error syncing patient data.',
+        subtitle: JSON.stringify(err),
+      });
     }
-
-    // Identifiers
-    Object.entries(syncFields).forEach(async ([k, v]) => {
-      if (identifiersSyncFields().includes(k)) {
-        if (v) {
-          const identifierUuid = getIdentifierUuid(HieIdentificationType[k]);
-          const identifierPayload = {
-            identifier: v,
-            location: locationUuid,
-            identifierType: identifierUuid,
-          };
-          await updateAmrsPersonIdentifiers(amrsPerson.uuid, identifierPayload);
-        }
-      }
-    });
   };
 
   const handleSelectAmrsDependant = async (e: any) => {
     const uuid = e.target.value;
+    if (!uuid) {
+      setAmrsRelationExists(false);
+      setAmrsDependantData(null);
+    }
     const response = await fetchAmrsPersonData(uuid);
     if (response && response.data) {
       setAmrsRelationExists(true);
-      setAmrsDependantData(response.data);
+      setAmrsDependantData((prev) => ({ ...prev, person: response.data }));
     } else {
       setAmrsRelationExists(false);
       setAmrsDependantData(null);
@@ -121,12 +142,14 @@ const ClientDependantTile: React.FC<ClientDependantTileProps> = ({ dependant, pa
     }
   };
 
+  const getDependantName = () => {
+    const name = dependant.result[0];
+    return `${name.first_name} ${name.middle_name} ${name.last_name} (${dependant.relationship})`;
+  };
+
   return (
-    <ExpandableTile
-      tileCollapsedIconText="Expand to view dependant details"
-      tileExpandedIconText="Click to collapse dependant details">
-      <TileAboveTheFoldContent>{dependant.relationship}</TileAboveTheFoldContent>
-      <TileBelowTheFoldContent>
+    <>
+      <AccordionItem title={getDependantName()}>
         <Row>
           <Column>
             <Select labelText={t('amrsDependants', 'AMRS dependants')} onChange={handleSelectAmrsDependant}>
@@ -148,12 +171,46 @@ const ClientDependantTile: React.FC<ClientDependantTileProps> = ({ dependant, pa
           ) : null}
         </Row>
         <Row>
-          {amrsRelationExists ? (
-            <ClientRegistryPatientDetails hieData={dependant.result[0]} amrsPerson={amrsDependantData} />
-          ) : null}
+          <ClientRegistryPatientDetails
+            hieData={dependant.result[0]}
+            amrsPerson={amrsDependantData}
+            fromDependant={true}
+          />
         </Row>
-      </TileBelowTheFoldContent>
-    </ExpandableTile>
+      </AccordionItem>
+      {/* <ExpandableTile
+        tileCollapsedIconText="Expand to view dependant details"
+        tileExpandedIconText="Click to collapse dependant details">
+        <TileAboveTheFoldContent>{dependant.relationship}</TileAboveTheFoldContent>
+        <TileBelowTheFoldContent>
+          <Row>
+            <Column>
+              <Select labelText={t('amrsDependants', 'AMRS dependants')} onChange={handleSelectAmrsDependant}>
+                <SelectItem text={t('selectAmrsRelation', 'Select AMRS relation')} value="" />
+                {patientRelationships.map((relationship) => (
+                  <SelectItem
+                    text={`${relationship.display} (${relationship.relationshipType})`}
+                    value={relationship.relatedPerson.uuid}
+                  />
+                ))}
+              </Select>
+            </Column>
+            {!amrsRelationExists ? (
+              <Column>
+                <Button onClick={() => handleCreateDependant(dependant)}>
+                  {t('createDependant', 'Create dependant in AMRS')}
+                </Button>
+              </Column>
+            ) : null}
+          </Row>
+          <Row>
+            {amrsRelationExists ? (
+              <ClientRegistryPatientDetails hieData={dependant.result[0]} amrsPerson={amrsDependantData} />
+            ) : null}
+          </Row>
+        </TileBelowTheFoldContent>
+      </ExpandableTile> */}
+    </>
   );
 };
 
@@ -164,13 +221,15 @@ const ClientRegistryDependantDetails: React.FC<ClientRegistryDependantDetailsPro
 }) => {
   return (
     <div>
-      {hieDependants.map((dependant) => (
-        <ClientDependantTile
-          dependant={dependant}
-          amrsPerson={amrsPerson}
-          patientRelationships={patientRelationships}
-        />
-      ))}
+      <Accordion size="lg">
+        {hieDependants.map((dependant) => (
+          <ClientDependantTile
+            dependant={dependant}
+            amrsPerson={amrsPerson}
+            patientRelationships={patientRelationships}
+          />
+        ))}
+      </Accordion>
     </div>
   );
 };

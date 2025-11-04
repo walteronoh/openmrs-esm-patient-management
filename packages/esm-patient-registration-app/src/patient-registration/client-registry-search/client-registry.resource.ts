@@ -59,7 +59,7 @@ export async function fetchClientRegistryData(
   return postJson<ClientRegistrySearchResponse>(url, formattedPayload);
 }
 
-export async function fetchAmrsPersonData(patientUuid: string) {
+export async function fetchAmrsPatientData(patientUuid: string) {
   return await openmrsFetch<AmrsPerson>(`${restBaseUrl}/patient/${patientUuid}?v=full`, {
     method: 'GET',
   }).catch((err) => {
@@ -67,13 +67,27 @@ export async function fetchAmrsPersonData(patientUuid: string) {
   });
 }
 
-export async function updateAmrsPersonIdentifiers(patientUuid: string, payload: unknown) {
-  return await openmrsFetch(`${restBaseUrl}/patient/${patientUuid}/identifier`, {
+export async function updateAmrsPersonIdentifiers(
+  patientUuid: string,
+  identifierUuid: string,
+  payload: unknown,
+  fromDependant = false,
+) {
+  const resource = fromDependant ? 'person' : 'patient';
+  return await openmrsFetch(`${restBaseUrl}/${resource}/${patientUuid}/identifier/${identifierUuid}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
     body: payload,
+  });
+}
+
+export async function fetchAmrsPersonData(personUuid: string) {
+  return await openmrsFetch(`${restBaseUrl}/person/${personUuid}?v=full`, {
+    method: 'GET',
+  }).catch((err) => {
+    console.error(err);
   });
 }
 

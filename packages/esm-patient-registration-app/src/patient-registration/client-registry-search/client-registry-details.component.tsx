@@ -9,7 +9,7 @@ import {
 } from './client-registry.types';
 import ClientRegistryPatientDetails from './client-registry-patient-details.component';
 import ClientRegistryDependantDetails from './client-registry-dependant-details.component';
-import { fetchAmrsPersonData, fetchClientRegistryData, getRelationships } from './client-registry.resource';
+import { fetchAmrsPatientData, fetchClientRegistryData, getRelationships } from './client-registry.resource';
 
 interface ClientRegistryDetailsProps {
   payload: RequestCustomOtpDto;
@@ -41,7 +41,7 @@ const ClientRegistryDetails: React.FC<ClientRegistryDetailsProps> = ({ payload }
   const handleAmrsPersonDetails = async () => {
     try {
       setLoading(true);
-      const response = await fetchAmrsPersonData(patientUuid);
+      const response = await fetchAmrsPatientData(patientUuid);
       if (response) {
         setAmrsPerson(response.data);
       }
@@ -89,7 +89,9 @@ const ClientRegistryDetails: React.FC<ClientRegistryDetailsProps> = ({ payload }
         <Tab>Dependants</Tab>
       </TabList>
       <TabPanels>
-        <TabPanel>{hieData && <ClientRegistryPatientDetails hieData={hieData} amrsPerson={amrsPerson} />}</TabPanel>
+        <TabPanel>
+          {hieData && <ClientRegistryPatientDetails hieData={hieData} amrsPerson={amrsPerson} fromDependant={false} />}
+        </TabPanel>
         <TabPanel>
           {hieData && hieData.dependants ? (
             <ClientRegistryDependantDetails

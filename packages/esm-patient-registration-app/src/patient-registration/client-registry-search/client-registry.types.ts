@@ -40,7 +40,11 @@ export type ClientRegistryBody = {
   }>;
   dependants: Array<ClientRegistryDependantBody>;
   citizenship: string;
+  kra_pin: string;
+  civil_status: string;
   email: string;
+  phone: string;
+  place_of_birth: string;
   country: string;
   county: string;
   sub_county: string;
@@ -107,6 +111,7 @@ export interface AmrsPerson {
       familyName: string;
     };
     attributes: Array<Attributes>;
+    identifiers: Identifier[];
     voided: boolean;
     birthtime?: any;
     deathdateEstimated: boolean;
@@ -185,4 +190,54 @@ export const IdentifierTypesUuids = {
   TEMPORARY_DEPENDANT_ID_UUID,
   AMRS_UNIVERSAL_ID_UUID,
   UPI_NUMBER_UUID,
+};
+
+export enum HieAttributeType {
+  KRAPin = 'kra_pin',
+  CivilStatus = 'civil_status',
+  Email = 'email',
+  Phone = 'phone',
+  PlaceOfBirth = 'place_of_birth',
+  Citizenship = 'citizenship',
+  Cr = 'id',
+}
+
+const CONTACT_PHONE_NUMBER_UUID = '72a759a8-1359-11df-a1f1-0026b9348838';
+const CITIZENSHIP_UUID = '72a759a8-1359-11df-a1f1-0026b9348838';
+const CONTACT_EMAIL_ADDRESS_UUID = '2f65dbcb-3e58-45a3-8be7-fd1dc9aa0faa';
+const ALTERNATIVE_CONTACT_PHONE_NUMBER_UUID = 'c725f524-c14a-4468-ac19-4a0e6661c930';
+const KRA_PIN_UUID = 'ae683747-b3fc-4e5c-bad3-c3be743b248f';
+const CIVIL_STATUS_UUID = '8d871f2a-c2cc-11de-8d13-0010c6dffd0f';
+const CLIENT_REGISTRY_ID_UUID = 'e068e02b-faac-4baf-bd58-fe6e0c29a81f';
+const PLACE_OF_BIRTH_UUID = '8d8718c2-c2cc-11de-8d13-0010c6dffd0f';
+const EMAIL_UUID = '2f65dbcb-3e58-45a3-8be7-fd1dc9aa0faa';
+
+export const PersonAttributeTypeUuids = {
+  CONTACT_PHONE_NUMBER_UUID,
+  CITIZENSHIP_UUID,
+  CONTACT_EMAIL_ADDRESS_UUID,
+  ALTERNATIVE_CONTACT_PHONE_NUMBER_UUID,
+  KRA_PIN_UUID,
+  CIVIL_STATUS_UUID,
+  CLIENT_REGISTRY_ID_UUID,
+  PLACE_OF_BIRTH_UUID,
+  EMAIL_UUID,
+};
+
+const PARENT_CHILD_UUID = '7878d348-1359-11df-a1f1-0026b9348838';
+const AUNT_UNCLE_NIECE_NEPHEW_UUID = '7878dd3e-1359-11df-a1f1-0026b9348838';
+const SPOUSE_UUID = '7878df3c-1359-11df-a1f1-0026b9348838';
+const GRANDCHILD_GRANDPARENT_UUID = '7878e144-1359-11df-a1f1-0026b9348838';
+const GUARDIAN_CHILD_UUD = '01bc0cf5-d428-427f-be13-305eb9cad7ba';
+const FOSTER_CHILD_FOSTER_PARENT_UUID = '7878e52c-1359-11df-a1f1-0026b9348838';
+const OTHER_NON_CODED_UUID = 'af78531e-98ab-41da-be3a-6a871ecbf8c0';
+
+export const RelationshipTypeUuids = {
+  PARENT_CHILD_UUID,
+  AUNT_UNCLE_NIECE_NEPHEW_UUID,
+  SPOUSE_UUID,
+  GRANDCHILD_GRANDPARENT_UUID,
+  GUARDIAN_CHILD_UUD,
+  FOSTER_CHILD_FOSTER_PARENT_UUID,
+  OTHER_NON_CODED_UUID,
 };
