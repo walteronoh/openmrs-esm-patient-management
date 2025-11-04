@@ -93,7 +93,7 @@ jobs:
       - name: 🚀 Publish to npm with next tag
         run: |
           cd packages/esm-patient-registration-app
-          npm publish --tag next
+          npm publish --tag next --legacy-peer-deps
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
 
@@ -131,6 +131,6 @@ jobs:
       - name: 🚀 Publish to npm with latest tag
         run: |
           cd packages/esm-patient-registration-app
-          npm publish --tag latest
+          npm publish --tag latest --legacy-peer-deps
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
