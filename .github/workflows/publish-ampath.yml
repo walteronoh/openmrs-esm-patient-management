@@ -3,9 +3,6 @@ name: AMPATH Package Publishing
 on:
   push:
     branches: [main]
-    paths:
-      - 'packages/esm-patient-registration-app/**'
-      - '.github/workflows/publish-ampath.yml'
   release:
     types:
       - created
