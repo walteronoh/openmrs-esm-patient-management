@@ -262,6 +262,7 @@ export const PatientRegistration: React.FC<PatientRegistrationProps> = ({ savePa
                         onClientVerified={() => setIsClientVerified(true)}
                         onModalClose={closeVerifyModal}
                         open={showVerifyModal}
+                        isNewClient={true}
                       />
                     </>
                   ) : (

@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
-import { type HieClient } from '../types';
+import { type HieClient } from '../../types';
 import { DataTable, Table, TableHead, TableRow, TableHeader, TableBody, TableCell } from '@carbon/react';
-import { generateHieClientDetails } from '../hie-client-adapter';
+import { generateHieClientDetails } from '../../hie-client-adapter';
 
 interface ClientdetailsProps {
   client: HieClient;

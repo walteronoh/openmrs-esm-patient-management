@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
-import { HieClient, type HieDependant } from '../../types';
 import { Table, TableHead, TableRow, TableHeader, TableBody, TableCell } from '@carbon/react';
+import { type HieDependant } from '../../../types';
 
 interface ClientDependantsListProps {
   hieDependants: HieDependant[];
