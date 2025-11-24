@@ -14,12 +14,25 @@ const ClientRegistryVerificationModal: React.FC<ClientRegistryVerificationPropsM
   props,
 }) => {
   const { t } = useTranslation();
+
+  const registerOnAfyaYangu = () => {
+    window.open('https://afyayangu.go.ke/', '_blank');
+  };
+
   return (
     <>
       <ModalHeader closeModal={close} title={t('hieClientVerificationTitle', 'HIE Client Verification')} />
       <ModalBody>
         <Component {...props} />
       </ModalBody>
+      <ModalFooter>
+        <Button kind="secondary" size="lg" onClick={close}>
+          {t('cancel', 'Cancel')}
+        </Button>
+        <Button kind="primary" size="lg" onClick={() => registerOnAfyaYangu()}>
+          {t('registerOnAfyaYangu', 'Register on Afya Yangu')}
+        </Button>
+      </ModalFooter>
     </>
   );
 };

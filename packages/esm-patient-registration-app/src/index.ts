@@ -63,6 +63,6 @@ export const deleteIdentifierConfirmationModal = getAsyncLifecycle(
 );
 
 export const clientRegistryVerificationTag = getAsyncLifecycle(
-  () => import('./patient-registration/client-registry-search/client-registry-verification-tag.component'),
+  () => import('./patient-registration/client-registry/existing-client/client-registry-verification-tag.component'),
   options,
 );

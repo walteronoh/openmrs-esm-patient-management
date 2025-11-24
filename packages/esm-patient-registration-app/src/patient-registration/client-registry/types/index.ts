@@ -9,6 +9,16 @@ export enum HieIdentificationType {
   TemporaryDependantID = 'Temporary Dependant ID',
 }
 
+export enum HieAttributeType {
+  KRAPin = 'kra_pin',
+  CivilStatus = 'civil_status',
+  Email = 'email',
+  Phone = 'phone',
+  PlaceOfBirth = 'place_of_birth',
+  Citizenship = 'citizenship',
+  Cr = 'id',
+}
+
 export interface HieIdentifications {
   identification_number: string;
   identification_type: HieIdentificationType;

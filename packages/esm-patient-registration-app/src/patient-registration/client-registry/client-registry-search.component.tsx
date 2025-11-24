@@ -18,14 +18,17 @@ import { useFormikContext } from 'formik';
 import styles from './client-registry-search.scss';
 import { requestCustomOtp, validateCustomOtp, fetchClientRegistryData } from './client-registry.resource';
 import { applyClientRegistryMapping } from './map-client-registry-to-form-utils';
-import ClientDetails from './client-details/client-details';
+import ClientDetails from './new-client/client-details/client-details';
 import { type HieClient } from './types';
-import ClientDependantList from './client-dependants/list/client-depandants.component';
+import ClientDependantList from './new-client/client-dependants/list/client-depandants.component';
+import NewClientTab from './new-client/new-client-tab.component';
+import ExistingClientTab from './existing-client/existing-client-tab.component';
 
 export interface ClientRegistryLookupSectionProps {
   onClientVerified?: () => void;
   onModalClose: () => void;
   open: boolean;
+  isNewClient: boolean;
 }
 
 export type IdentifierType = 'National ID' | 'Alien ID' | 'Passport' | 'Mandate Number' | 'Refugee ID';
@@ -42,6 +45,7 @@ const ClientRegistryLookupSection: React.FC<ClientRegistryLookupSectionProps> = 
   onClientVerified,
   open,
   onModalClose,
+  isNewClient = true,
 }) => {
   const { setFieldValue } = useFormikContext<any>();
   const [identifierType, setIdentifierType] = useState<IdentifierType>('National ID');
@@ -294,7 +298,12 @@ const ClientRegistryLookupSection: React.FC<ClientRegistryLookupSectionProps> = 
 
           {otpVerified && client ? (
             <div className="clientDataSection">
-              <Tabs>
+              {isNewClient ? (
+                <NewClientTab client={client} useHieData={useHieData} />
+              ) : (
+                <ExistingClientTab hieClient={client} />
+              )}
+              {/* <Tabs>
                 <TabList contained>
                   <Tab>Patient</Tab>
                   <Tab>Dependants</Tab>
@@ -306,7 +315,7 @@ const ClientRegistryLookupSection: React.FC<ClientRegistryLookupSectionProps> = 
                   </TabPanel>
                 </TabPanels>
               </Tabs>
-              <Button onClick={useHieData}>Use Data</Button>
+              <Button onClick={useHieData}>Use Data</Button> */}
             </div>
           ) : (
             <></>
