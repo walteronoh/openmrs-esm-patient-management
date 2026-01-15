@@ -1,18 +1,23 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Button } from '@carbon/react';
 import { age, usePatient } from '@openmrs/esm-framework';
 import { Formik } from 'formik';
 import ClientRegistryLookupSection from '../client-registry-search.component';
+import { useTranslation } from 'react-i18next';
 
 const ClientRegistryVerificationTag = () => {
+  const { t } = useTranslation();
   const { patient } = usePatient();
   const [showCrBtn, setShowCrBtn] = useState(false);
   const [showVerifyModal, setShowVerifyModal] = useState(false);
   const [isClientVerified, setIsClientVerified] = useState(false);
   const initialFormValues = {};
+  const [hasCR, setHasCR] = useState(false);
 
   useEffect(() => {
-    if (patient && patient.birthDate) {
+    const isDeceased = patient?.deceasedBoolean ?? true;
+    if (patient && !isDeceased && patient.birthDate) {
+      setHasCR(patient.identifier.some((v) => v.type.text.includes('CR')));
       const ageArr = age(patient.birthDate).split(' ');
       if (ageArr.includes('yrs')) {
         const yrs = Number(ageArr[0]);
@@ -30,8 +35,18 @@ const ClientRegistryVerificationTag = () => {
 
   return showCrBtn ? (
     <>
-      <Button kind="ghost" style={{ backgroundColor: 'purple', color: 'white' }} onClick={openVerifyModal}>
-        Verify CR
+      <Button
+        kind="ghost"
+        size="sm"
+        style={{
+          backgroundColor: 'purple',
+          color: 'white',
+          margin: '0px 10px',
+          borderRadius: '10px',
+          fontSize: '14px',
+        }}
+        onClick={openVerifyModal}>
+        {hasCR ? t('updateFromCR', 'Update from CR') : t('verifyCR', 'Verify CR')}
       </Button>
       {showVerifyModal ? (
         <Formik enableReinitialize initialValues={initialFormValues} onSubmit={null}>
