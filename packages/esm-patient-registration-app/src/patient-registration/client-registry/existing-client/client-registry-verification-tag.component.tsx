@@ -15,13 +15,15 @@ const ClientRegistryVerificationTag = () => {
   const [hasCR, setHasCR] = useState(false);
 
   useEffect(() => {
-    const isDeceased = patient?.deceasedBoolean ?? true;
-    if (patient && !isDeceased && patient.birthDate) {
-      setHasCR(patient.identifier.some((v) => v.type.text.includes('CR')));
-      const ageArr = age(patient.birthDate).split(' ');
-      if (ageArr.includes('yrs')) {
-        const yrs = Number(ageArr[0]);
-        setShowCrBtn(yrs > 17);
+    if (patient && patient.birthDate) {
+      const isDeceased = patient?.deceasedBoolean ?? true;
+      if (!isDeceased) {
+        setHasCR(patient.identifier.some((v) => v.type.text.includes('CR')));
+        const ageArr = age(patient.birthDate).split(' ');
+        if (ageArr.includes('yrs')) {
+          const yrs = Number(ageArr[0]);
+          setShowCrBtn(yrs > 17);
+        }
       }
     }
   }, [patient]);
