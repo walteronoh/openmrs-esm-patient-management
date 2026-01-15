@@ -115,10 +115,12 @@
   "unableToFetch": "Unable to fetch person attribute type - {{personattributetype}}",
   "unknown": "Unknown",
   "unknownPatientAttributeType": "Patient attribute type has unknown format {{personAttributeTypeFormat}}",
+  "updateFromCR": "Update from CR",
   "updatePatient": "Update patient",
   "updatePatientErrorSnackbarTitle": "Patient Details Update Failed",
   "updatePatientSuccessSnackbarSubtitle": "The patient's information has been successfully updated",
   "updatePatientSuccessSnackbarTitle": "Patient Details Updated",
+  "verifyCR": "Verify CR",
   "yearsEstimateRequired": "Estimated years required",
   "yes": "Yes"
 }
