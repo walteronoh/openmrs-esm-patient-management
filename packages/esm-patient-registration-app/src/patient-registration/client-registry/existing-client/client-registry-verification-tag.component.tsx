@@ -41,14 +41,14 @@ const ClientRegistryVerificationTag = () => {
         kind="ghost"
         size="sm"
         style={{
-          backgroundColor: 'purple',
+          backgroundColor: hasCR ? '#008000' : '#0055a5',
           color: 'white',
           margin: '0px 10px',
           borderRadius: '10px',
           fontSize: '14px',
         }}
         onClick={openVerifyModal}>
-        {hasCR ? t('updateFromCR', 'Update from CR') : t('verifyCR', 'Verify CR')}
+        {hasCR ? t('updateFromCR', 'Updated from CR') : t('verifyCR', 'Verify CR')}
       </Button>
       {showVerifyModal ? (
         <Formik enableReinitialize initialValues={initialFormValues} onSubmit={null}>

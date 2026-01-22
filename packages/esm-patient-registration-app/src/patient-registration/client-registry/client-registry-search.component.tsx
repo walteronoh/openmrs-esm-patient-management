@@ -28,6 +28,7 @@ const ClientRegistryLookupSection: React.FC<ClientRegistryLookupSectionProps> = 
   const [otpSent, setOtpSent] = useState(false);
   const [otpVerified, setOtpVerified] = useState<boolean>(false);
   const [loading, setLoading] = useState(false);
+  const [isSendingOtp, setIsSendingOtp] = useState(false);
   const [sessionId, setSessionId] = useState('');
   const [error, setError] = useState<string>('');
   const { sessionLocation } = useSession();
@@ -90,7 +91,7 @@ const ClientRegistryLookupSection: React.FC<ClientRegistryLookupSectionProps> = 
       return;
     }
 
-    setLoading(true);
+    setIsSendingOtp(true);
     setError('');
 
     try {
@@ -118,7 +119,7 @@ const ClientRegistryLookupSection: React.FC<ClientRegistryLookupSectionProps> = 
         subtitle: errorMessage,
       });
     } finally {
-      setLoading(false);
+      setIsSendingOtp(false);
     }
   };
 
@@ -236,8 +237,8 @@ const ClientRegistryLookupSection: React.FC<ClientRegistryLookupSectionProps> = 
                           </Button>
                         </div>
                         <div className={styles.actionBtn}>
-                          <Button kind="secondary" onClick={handleSendOtp} disabled={loading}>
-                            {loading ? <InlineLoading description="Resending OTP..." /> : 'Resend OTP'}
+                          <Button kind="secondary" onClick={handleSendOtp} disabled={isSendingOtp}>
+                            {isSendingOtp ? <InlineLoading description="Resending OTP..." /> : 'Resend OTP'}
                           </Button>
                         </div>
                         <div className={styles.actionBtn}>
