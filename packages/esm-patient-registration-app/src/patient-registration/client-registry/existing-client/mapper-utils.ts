@@ -161,20 +161,17 @@ export const mapFieldValue = (field: string, hieData: HieClient, amrsPerson: Amr
     case 'NationalID':
       arr = [
         sanitizeValue(
-          amrsPerson?.person?.identifiers?.find(
+          amrsPerson?.identifiers?.find(
             (v) => v.identifierType.uuid === getIdentifierUuid(HieIdentificationType.NationalID),
           )?.identifier,
         ),
-        sanitizeValue(
-          hieData?.other_identifications.find((v) => v.identification_type === HieIdentificationType.NationalID)
-            ?.identification_number,
-        ),
+        sanitizeValue(hieData?.identification_number),
       ];
       break;
     case 'SHANumber':
       arr = [
         sanitizeValue(
-          amrsPerson?.person?.identifiers?.find(
+          amrsPerson?.identifiers?.find(
             (v) => v.identifierType.uuid === getIdentifierUuid(HieIdentificationType.SHANumber),
           )?.identifier,
         ),
@@ -187,7 +184,7 @@ export const mapFieldValue = (field: string, hieData: HieClient, amrsPerson: Amr
     case 'HouseholdNumber':
       arr = [
         sanitizeValue(
-          amrsPerson?.person?.identifiers?.find(
+          amrsPerson?.identifiers?.find(
             (v) => v.identifierType.uuid === getIdentifierUuid(HieIdentificationType.HouseholdNumber),
           )?.identifier,
         ),
@@ -200,7 +197,7 @@ export const mapFieldValue = (field: string, hieData: HieClient, amrsPerson: Amr
     case 'RefugeeID':
       arr = [
         sanitizeValue(
-          amrsPerson?.person?.identifiers?.find(
+          amrsPerson?.identifiers?.find(
             (v) => v.identifierType.uuid === getIdentifierUuid(HieIdentificationType.RefugeeID),
           )?.identifier,
         ),
@@ -213,7 +210,7 @@ export const mapFieldValue = (field: string, hieData: HieClient, amrsPerson: Amr
     case 'AlienID':
       arr = [
         sanitizeValue(
-          amrsPerson?.person?.identifiers?.find(
+          amrsPerson?.identifiers?.find(
             (v) => v.identifierType.uuid === getIdentifierUuid(HieIdentificationType.AlienID),
           )?.identifier,
         ),
@@ -226,7 +223,7 @@ export const mapFieldValue = (field: string, hieData: HieClient, amrsPerson: Amr
     case 'MandateNumber':
       arr = [
         sanitizeValue(
-          amrsPerson?.person?.identifiers?.find(
+          amrsPerson?.identifiers?.find(
             (v) => v.identifierType.uuid === getIdentifierUuid(HieIdentificationType.MandateNumber),
           )?.identifier,
         ),
@@ -239,9 +236,8 @@ export const mapFieldValue = (field: string, hieData: HieClient, amrsPerson: Amr
     case 'Cr':
       arr = [
         sanitizeValue(
-          amrsPerson?.person?.identifiers?.find(
-            (v) => v.identifierType.uuid === getIdentifierUuid(HieIdentificationType.Cr),
-          )?.identifier,
+          amrsPerson?.identifiers?.find((v) => v.identifierType.uuid === getIdentifierUuid(HieIdentificationType.Cr))
+            ?.identifier,
         ),
         sanitizeValue(hieData?.id),
       ];
@@ -249,7 +245,7 @@ export const mapFieldValue = (field: string, hieData: HieClient, amrsPerson: Amr
     case 'TemporaryDependantID':
       arr = [
         sanitizeValue(
-          amrsPerson?.person?.identifiers?.find(
+          amrsPerson?.identifiers?.find(
             (v) => v.identifierType.uuid === getIdentifierUuid(HieIdentificationType.TemporaryDependantID),
           )?.identifier,
         ),
