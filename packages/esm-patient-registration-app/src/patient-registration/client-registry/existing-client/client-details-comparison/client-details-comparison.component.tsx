@@ -11,7 +11,7 @@ import {
   Checkbox,
   TableBody,
 } from '@carbon/react';
-import { showSnackbar } from '@openmrs/esm-framework';
+import { showSnackbar, useSession } from '@openmrs/esm-framework';
 import { HieIdentificationType } from '../../types';
 import {
   personSyncFields,
@@ -26,10 +26,11 @@ import ComparisonTableRow from './comparison-table-row.component';
 import { updateAmrsPersonIdentifiers, updatePerson } from '../existing-client.resource';
 
 const ClientDetailsComparison: React.FC<ClientDetailsComparisonProps> = ({ hieClient, amrsClient, fromDependant }) => {
+  const session = useSession();
   const [syncFields, setSyncFields] = useState<Array<Record<string, string>>>([]);
   const [allChecked, setAllChecked] = useState(false);
   const [loading, setLoading] = useState(false);
-  const locationUuid = '18c343eb-b353-462a-9139-b16606e6b6c2';
+  const locationUuid = session?.sessionLocation?.uuid;
   const randomString = Math.random().toString(10).substring(2, 6).toUpperCase();
 
   const handleFieldChange = (checked: boolean, field: string, value: string, multiple: boolean) => {
@@ -100,7 +101,7 @@ const ClientDetailsComparison: React.FC<ClientDetailsComparisonProps> = ({ hieCl
             };
             try {
               // Check if the identifier exists
-              if (amrsClient?.person?.identifiers?.find((i) => i.identifierType.uuid === identifierUuid)) {
+              if (amrsClient?.identifiers?.find((i) => i.identifierType.uuid === identifierUuid)) {
                 // update to have the selected identifier
                 await updateAmrsPersonIdentifiers(
                   amrsClient.person.uuid,
