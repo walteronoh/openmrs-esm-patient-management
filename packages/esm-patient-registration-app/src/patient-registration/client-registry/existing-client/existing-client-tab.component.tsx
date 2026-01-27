@@ -64,7 +64,14 @@ const ExistingClientTab: React.FC<ExistingClientTabProps> = ({ hieClient }) => {
       </TabList>
       <TabPanels>
         <TabPanel>
-          {hieClient && <ClientDetailsComparison hieClient={hieClient} amrsClient={amrsClient} fromDependant={false} />}
+          {hieClient && (
+            <ClientDetailsComparison
+              hieClient={hieClient}
+              amrsClient={amrsClient}
+              fromDependant={false}
+              onDataSync={handleAmrsPersonDetails}
+            />
+          )}
         </TabPanel>
         <TabPanel>
           {hieClient && hieClient.dependants ? (
@@ -72,6 +79,10 @@ const ExistingClientTab: React.FC<ExistingClientTabProps> = ({ hieClient }) => {
               hieDependants={hieClient.dependants}
               amrsClient={amrsClient}
               patientRelationships={relationships}
+              onDataSync={() => {
+                handleAmrsPersonDetails();
+                handleFetchPatientRelationships();
+              }}
             />
           ) : (
             <div>Dependants not found.</div>

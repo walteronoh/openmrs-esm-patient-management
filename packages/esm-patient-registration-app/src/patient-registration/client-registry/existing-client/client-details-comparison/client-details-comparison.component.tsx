@@ -25,7 +25,12 @@ import {
 import ComparisonTableRow from './comparison-table-row.component';
 import { updateAmrsPersonIdentifiers, updatePerson } from '../existing-client.resource';
 
-const ClientDetailsComparison: React.FC<ClientDetailsComparisonProps> = ({ hieClient, amrsClient, fromDependant }) => {
+const ClientDetailsComparison: React.FC<ClientDetailsComparisonProps> = ({
+  hieClient,
+  amrsClient,
+  fromDependant,
+  onDataSync,
+}) => {
   const session = useSession();
   const [syncFields, setSyncFields] = useState<Array<Record<string, string>>>([]);
   const [allChecked, setAllChecked] = useState(false);
@@ -101,11 +106,12 @@ const ClientDetailsComparison: React.FC<ClientDetailsComparisonProps> = ({ hieCl
             };
             try {
               // Check if the identifier exists
-              if (amrsClient?.identifiers?.find((i) => i.identifierType.uuid === identifierUuid)) {
+              let identifier = amrsClient?.identifiers?.find((i) => i.identifierType.uuid === identifierUuid);
+              if (identifier) {
                 // update to have the selected identifier
                 await updateAmrsPersonIdentifiers(
                   amrsClient.person.uuid,
-                  identifierUuid + '',
+                  identifier.uuid + '',
                   identifierPayload,
                   fromDependant,
                 );
@@ -113,6 +119,10 @@ const ClientDetailsComparison: React.FC<ClientDetailsComparisonProps> = ({ hieCl
                 // create to have the blank identifier
                 await updateAmrsPersonIdentifiers(amrsClient.person.uuid, '', identifierPayload, fromDependant);
               }
+              showSnackbar({
+                kind: 'success',
+                title: 'Patient identifiers successfully synced.',
+              });
             } catch (err) {
               showSnackbar({
                 kind: 'error',
@@ -122,12 +132,10 @@ const ClientDetailsComparison: React.FC<ClientDetailsComparisonProps> = ({ hieCl
           }
         }
       });
-      showSnackbar({
-        kind: 'success',
-        title: 'Patient identifiers successfully synced.',
-      });
 
       setSyncFields([]);
+
+      onDataSync();
     } catch (err) {
       showSnackbar({
         kind: 'error',

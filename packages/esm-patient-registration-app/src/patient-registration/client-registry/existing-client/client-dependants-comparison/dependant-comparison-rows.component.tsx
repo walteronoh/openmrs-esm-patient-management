@@ -143,6 +143,7 @@ const ClientDependantComparisonRows: React.FC<ClientDependantComparisonRowsProps
             hieClient={hieDependant.result[0]}
             amrsClient={amrsDependantData}
             fromDependant={true}
+            onDataSync={() => {}}
           />
         </Row>
       </AccordionItem>

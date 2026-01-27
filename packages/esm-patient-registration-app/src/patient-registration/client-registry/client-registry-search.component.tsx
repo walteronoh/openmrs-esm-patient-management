@@ -166,8 +166,8 @@ const ClientRegistryLookupSection: React.FC<ClientRegistryLookupSectionProps> = 
       size="md"
       onSecondarySubmit={onModalClose}
       onRequestClose={onModalClose}
-      onRequestSubmit={registerOnAfyaYangu}
-      primaryButtonText="Register on Afya Yangu"
+      onRequestSubmit={isNewClient ? registerOnAfyaYangu : null}
+      primaryButtonText={isNewClient ? 'Register on Afya Yangu' : null}
       secondaryButtonText="Cancel">
       <ModalBody>
         <div className={styles.modalVerificationLayout}>

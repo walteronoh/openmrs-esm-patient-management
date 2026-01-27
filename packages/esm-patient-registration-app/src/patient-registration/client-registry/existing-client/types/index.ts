@@ -161,6 +161,7 @@ export interface ClientDetailsComparisonProps {
   hieClient: HieClient;
   amrsClient: AmrsClient;
   fromDependant?: boolean;
+  onDataSync?(): void;
 }
 
 export interface ComparisonTableRowProps {
@@ -176,6 +177,7 @@ export interface ClientDependantsComparisonProps {
   hieDependants: Array<HieDependant>;
   amrsClient: AmrsClient;
   patientRelationships: Array<CustomRelationship>;
+  onDataSync?(): void;
 }
 
 export interface ClientDependantComparisonRowsProps {
